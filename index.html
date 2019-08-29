@@ -7,7 +7,76 @@
     <title>Document</title>
   </head>
   <body>
-    <demo-switch off></demo-switch>
+    <demo-switch off>
+      <span slot="on">On</span>
+      <span slot="off">Off</span>
+    </demo-switch>
+
+    <template id="demo-switch-tpl">
+      <style>
+        :host {
+          display: inline-block;
+        }
+
+        .switch {
+          position: relative;
+          display: inline-block;
+          height: 20px;
+          line-height: 20px;
+          border: 2px solid #000000;
+          border-radius: 20px;
+          padding: 5px;
+          cursor: pointer;
+          background: #ffcc00;
+        }
+
+        .switch__option--on {
+          padding-right: 20px;
+          visibility: visible;
+        }
+
+        .switch__option--off {
+          margin-top: -20px;
+          padding-left: 20px;
+          visibility: hidden;
+          text-align: right;
+        }
+
+        .switch--off .switch__option--on {
+          visibility: hidden;
+        }
+
+        .switch--off .switch__option--off {
+          visibility: visible;
+        }
+
+        .switch__knob {
+          width: 20px;
+          height: 20px;
+          padding: 5px;
+          position: absolute;
+          top: 0;
+          right: 0;
+          border-radius: 50% 50%;
+          background: #000000;
+          background-clip: content-box;
+        }
+
+        .switch--off .switch__knob {
+          left: 0;
+        }
+      </style>
+
+      <div class="switch">
+        <div class="switch__option switch__option--on">
+          <slot name="on">On</slot>
+        </div>
+        <div class="switch__option switch__option--off">
+          <slot name="off">Off</slot>
+        </div>
+        <div class="switch__knob"></div>
+      </div>
+    </template>
 
     <script>
       class DemoSwitch extends HTMLElement {
@@ -19,66 +88,10 @@
           super();
 
           const root = this.attachShadow({ mode: "open" });
-          root.innerHTML = `
-            <style>
-              demo-switch {
-                display: inline-block;
-              }
 
-              .switch {
-                position: relative;
-                display: inline-block;
-                height: 20px;
-                line-height: 20px;
-                border: 2px solid #000000;
-                border-radius: 20px;
-                padding: 5px;
-                cursor: pointer;
-                background: #ffcc00;
-              }
-
-              .switch__option--on {
-                padding-right: 20px;
-                visibility: visible;
-              }
-
-              .switch__option--off {
-                margin-top: -20px;
-                padding-left: 20px;
-                visibility: hidden;
-              }
-
-              .switch--off .switch__option--on {
-                visibility: hidden;
-              }
-
-              .switch--off .switch__option--off {
-                visibility: visible;
-              }
-
-              .switch__knob {
-                width: 20px;
-                height: 20px;
-                padding: 5px;
-                position: absolute;
-                top: 0;
-                right: 0;
-                border-radius: 50% 50%;
-                background: #000000;
-                background-clip: content-box;
-              }
-
-              .switch--off .switch__knob {
-                left: 0;
-              }
-            </style>
-
-            <div class="switch">
-              <div class="switch__option switch__option--on">On</div>
-              <div class="switch__option switch__option--off">Off</div>
-              <div class="switch__knob"></div>
-            </div>
-          `;
+          root.appendChild(
+            document.querySelector("#demo-switch-tpl").content.cloneNode(true)
+          );
         }
 
         set off(value) {

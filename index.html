@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+
+    <style>
+      demo-switch {
+        display: inline-block;
+      }
+
+      .switch {
+        position: relative;
+        display: inline-block;
+        height: 20px;
+        line-height: 20px;
+        border: 2px solid #000000;
+        border-radius: 20px;
+        padding: 5px;
+        cursor: pointer;
+        background: #ffcc00;
+      }
+
+      .switch__option--on {
+        padding-right: 20px;
+        visibility: visible;
+      }
+
+      .switch__option--off {
+        margin-top: -20px;
+        padding-left: 20px;
+        visibility: hidden;
+      }
+
+      .switch--off .switch__option--on {
+        visibility: hidden;
+      }
+
+      .switch--off .switch__option--off {
+        visibility: visible;
+      }
+
+      .switch__knob {
+        width: 20px;
+        height: 20px;
+        padding: 5px;
+        position: absolute;
+        top: 0;
+        right: 0;
+        border-radius: 50% 50%;
+        background: #000000;
+        background-clip: content-box;
+      }
+
+      .switch--off .switch__knob {
+        left: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <demo-switch off></demo-switch>
+
+    <script>
+      class DemoSwitch extends HTMLElement {
+        static get observedAttributes() {
+          return ["off"];
+        }
+
+        constructor() {
+          super();
+
+          this.innerHTML = `
+            <div class="switch">
+              <div class="switch__option switch__option--on">On</div>
+              <div class="switch__option switch__option--off">Off</div>
+              <div class="switch__knob"></div>
+            </div>
+          `;
+        }
+
+        set off(value) {
+          Boolean(value)
+            ? this.setAttribute("off", "")
+            : this.removeAttribute("off");
+        }
+
+        get off() {
+          return (
+            this.hasAttribute("off") && this.getAttribute("off") !== "false"
+          );
+        }
+
+        attributeChangedCallback(name, oldValue, newValue) {
+          if (name !== "off") {
+            return;
+          }
+
+          this.querySelector(".switch").classList.toggle(
+            "switch--off",
+            this.off
+          );
+        }
+
+        connectedCallback() {
+          this.addEventListener("click", this._onClick);
+        }
+
+        disconnectedCallback() {
+          this.removeEventListener("click", this._onClick);
+        }
+
+        _onClick(event) {
+          event.stopPropagation();
+          this._toggleOff();
+        }
+
+        _toggleOff() {
+          this.off = !this.off;
+
+          this.dispatchEvent(
+            new CustomEvent("change", {
+              detail: { off: this.off },
+              bubbles: true
+            })
+          );
+        }
+      }
+
+      window.customElements.define("demo-switch", DemoSwitch);
+    </script>
+  </body>
+</html>
